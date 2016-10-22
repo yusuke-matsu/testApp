@@ -117,7 +117,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		return  t.getIssue(stub,person_name)
 
 	}else if function == "getAllIssues"{
-		if len(args) != nil{
+		if len(args) != 0{
 			fmt.Println("####Incorrect args number ####")
 			return nil, errors.New("####Incorrect args number ####")
 		}
