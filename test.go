@@ -145,7 +145,7 @@ func (t *SimpleChaincode) getIssue(stub *shim.ChaincodeStub, personName string) 
 	err = json.Unmarshal(issueBytes,&record_issue)
 
 	if err != nil {
-		return nil,errors.New("#### failed to unmarshall state"+)
+		return nil,errors.New("#### failed to unmarshall state")
 	}
 
 	bytes, err := json.Marshal(record_issue)
@@ -155,10 +155,10 @@ func (t *SimpleChaincode) getIssue(stub *shim.ChaincodeStub, personName string) 
 	return []byte(bytes), nil
 }
 
-func (t *SimpleChaincode) getAllIssue(stub *shim.ChaincodeStub,) ([]byte, error) {
+func (t *SimpleChaincode) getAllIssue(stub *shim.ChaincodeStub) ([]byte, error) {
 
 	var err error
-	var issue_recrod Issue
+	var issue_record Issue
 	var issue_set IssueSet
 
 	//get issue
@@ -173,11 +173,11 @@ func (t *SimpleChaincode) getAllIssue(stub *shim.ChaincodeStub,) ([]byte, error)
 		if iterErr !=nil{
 			return nil,errors.New("error")
 		}
-		err = json.Unmarshal(issue_asbytes, &issue_recrod)
+		err = json.Unmarshal(issue_asbytes, &issue_record)
 		if err != nil {
 			return nil, errors.New("####Error unmarmashalling data"+string(issue_asbytes)+"####")
 		}
-		issue_set.Issues = append(issue_set.Issues,issue_recrod)
+		issue_set.Issues = append(issue_set.Issues,issue_record)
 	}
 
 	bytes, err := json.Marshal(issue_set.Issues)
