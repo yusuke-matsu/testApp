@@ -26,7 +26,7 @@ type IssueSet struct{
 	Issues []Issue `json:"issues"`
 }
 
-func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	fmt.Println("Entering into init ")
 
@@ -35,7 +35,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 	return nil, nil
 }
 
-func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	var err error
 	fmt.Println("Entering into Invoke : "+ function)
@@ -104,7 +104,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 
 }
 
-func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println(function)
 
 	if function == "getIssue"{
@@ -129,7 +129,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 }
 
-func (t *SimpleChaincode) getIssue(stub *shim.ChaincodeStub, personName string) ([]byte, error) {
+func (t *SimpleChaincode) getIssue(stub shim.ChaincodeStubInterface, personName string) ([]byte, error) {
 
 	var err error
         var record_issue Issue
@@ -155,7 +155,7 @@ func (t *SimpleChaincode) getIssue(stub *shim.ChaincodeStub, personName string) 
 	return []byte(bytes), nil
 }
 
-func (t *SimpleChaincode) getAllIssue(stub *shim.ChaincodeStub) ([]byte, error) {
+func (t *SimpleChaincode) getAllIssue(stub shim.ChaincodeStubInterface) ([]byte, error) {
 
 	var err error
 	var issue_record Issue
