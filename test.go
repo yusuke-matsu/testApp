@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bitly/go-simplejson"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -65,6 +66,26 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			return nil, errors.New("can't parse float")
 		}
 
+		currentBytes, err := t.getIssue(stub, person_Name)
+		fmt.Println(currentBytes)
+		fmt.Println(err)
+
+		if err != nil {
+
+			regDate, err := simplejson.NewJson(currentBytes)
+			currentAmount, err := regDate.Get("amount").Float64()
+			newAmount := currentAmount + issue_amount
+			regDate.Set("amount", newAmount)
+			newBytes, err := json.Marshal(regDate)
+			err = stub.PutState(key, newBytes)
+			if err != nil {
+				return nil, errors.New("#####  faild to update data #####")
+			}
+
+			return nil, nil
+
+		}
+
 		//Get current date and time
 		t := time.Now()
 
@@ -87,6 +108,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		}
 
 		bytes, err := json.Marshal(record_issue)
+
 		if err != nil {
 			return nil, errors.New("#####  Failed to convert json #####")
 		}
@@ -101,7 +123,6 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	} else {
 		return nil, errors.New("undifine such func")
 	}
-
 }
 
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
@@ -113,6 +134,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 			fmt.Println("####Incorrect args number####")
 			return nil, errors.New("#### Incorrect number of args###")
 		}
+
 		person_name := args[0]
 		return t.getIssue(stub, person_name)
 
@@ -187,7 +209,7 @@ func (t *SimpleChaincode) getAllIssue(stub shim.ChaincodeStubInterface) ([]byte,
 	return []byte(bytes), nil
 }
 
-func (t *SimpleChaincode) payCrypto(stub shim.ChaincodeStubInterface) ([]byte, error) {
+/*func (t *SimpleChaincode) payCrypto(stub shim.ChaincodeStubInterface) ([]byte, error) {
 
 	var err err
 	var payPerson string
@@ -203,6 +225,7 @@ func (t *SimpleChaincode) payCrypto(stub shim.ChaincodeStubInterface) ([]byte, e
 	}
 
 	ts, err = stub.GetTxTimestamp()
+	stub.
 	if err != nil {
 		fmt.Printf("Error getting transaction timestamp: %s", err)
 	}
@@ -213,7 +236,7 @@ func (t *SimpleChaincode) payCrypto(stub shim.ChaincodeStubInterface) ([]byte, e
 	if err != nil {
 		return nil, errors.New("#### failed to get state of" + payPerson)
 	}
-}
+}*/
 
 func main() {
 	err := shim.Start(new(SimpleChaincode))
