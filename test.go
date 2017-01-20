@@ -72,7 +72,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		fmt.Println(currentBytes)
 		fmt.Println(err)
 
-		if err != nil || currentBytes == nil {
+		if err != nil || currentBytes != nil {
 
 			regDate, err := simplejson.NewJson(currentBytes)
 			currentAmount, err := regDate.Get("amount").Float64()
