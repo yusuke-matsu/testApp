@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bitly/go-simplejson"
+	"./github.com/bitly/go-simplejson"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
