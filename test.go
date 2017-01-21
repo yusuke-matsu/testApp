@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
 	"time"
 
@@ -281,6 +282,20 @@ func (j *Json) Set(key string, val interface{}) {
 		return
 	}
 	m[key] = val
+}
+
+func (j *Json) Float64() (float64, error) {
+	switch j.data.(type) {
+	case json.Number:
+		return j.data.(json.Number).Float64()
+	case float32, float64:
+		return reflect.ValueOf(j.data).Float(), nil
+	case int, int8, int16, int32, int64:
+		return float64(reflect.ValueOf(j.data).Int()), nil
+	case uint, uint8, uint16, uint32, uint64:
+		return float64(reflect.ValueOf(j.data).Uint()), nil
+	}
+	return 0, errors.New("invalid value type")
 }
 
 func main() {
