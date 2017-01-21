@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"./github.com/bitly/go-simplejson"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -73,8 +72,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		fmt.Println(err)
 
 		if err != nil || currentBytes != nil {
-
-			regDate, err := simplejson.NewJson(currentBytes)
+			//aa, err := simplejson.NewJson(currentBytes)
+			regDate, err := NewJson(currentBytes)
 			currentAmount, err := regDate.Get("amount").Float64()
 			newAmount := currentAmount + issue_amount
 			regDate.Set("amount", newAmount)

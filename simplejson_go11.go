@@ -1,6 +1,6 @@
 // +build go1.1
 
-package simplejson
+package main
 
 import (
 	"bytes"
