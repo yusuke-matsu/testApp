@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,7 +14,9 @@ import (
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
 }
-type ChaincodeLoger struct {
+
+type Json struct {
+	data interface{}
 }
 
 type Issue struct {
@@ -73,6 +76,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
 		if err != nil || currentBytes != nil {
 			//aa, err := simplejson.NewJson(currentBytes)
+
 			regDate, err := NewJson(currentBytes)
 			currentAmount, err := regDate.Get("amount").Float64()
 			newAmount := currentAmount + issue_amount
@@ -238,6 +242,46 @@ func (t *SimpleChaincode) getAllIssue(stub shim.ChaincodeStubInterface) ([]byte,
 		return nil, errors.New("#### failed to get state of" + payPerson)
 	}
 }*/
+
+func NewJson(body []byte) (*Json, error) {
+	j := new(Json)
+	err := j.UnmarshalJSON(body)
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
+}
+
+func (j *Json) UnmarshalJSON(p []byte) error {
+	dec := json.NewDecoder(bytes.NewBuffer(p))
+	dec.UseNumber()
+	return dec.Decode(&j.data)
+}
+
+func (j *Json) Get(key string) *Json {
+	m, err := j.Map()
+	if err == nil {
+		if val, ok := m[key]; ok {
+			return &Json{val}
+		}
+	}
+	return &Json{nil}
+}
+
+func (j *Json) Map() (map[string]interface{}, error) {
+	if m, ok := (j.data).(map[string]interface{}); ok {
+		return m, nil
+	}
+	return nil, errors.New("type assertion to map[string]interface{} failed")
+}
+
+func (j *Json) Set(key string, val interface{}) {
+	m, err := j.Map()
+	if err != nil {
+		return
+	}
+	m[key] = val
+}
 
 func main() {
 	err := shim.Start(new(SimpleChaincode))
