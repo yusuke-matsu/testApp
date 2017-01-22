@@ -60,6 +60,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
 		var person_Name string
 		var issue_amount float64
+		var record_issue Issue
 
 		//need to check person has already been registered or not
 
@@ -75,8 +76,9 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		fmt.Println(currentBytes)
 		fmt.Println(err)
 
-		if err != nil || currentBytes != nil {
-			//aa, err := simplejson.NewJson(currentBytes)
+		err := json.Unmarshal(currentBytes, &record_issue)
+
+		if err != nil {
 
 			regData, err := NewJson(currentBytes)
 			currentAmount, err := regData.Get("amount").Float64()
