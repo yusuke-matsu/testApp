@@ -81,7 +81,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		//myLogger.Info(currentBytes)
 		//err := json.Unmarshal(currentBytes, &record_issue)
 
-		if err != nil || len(currentBytes) != 0 {
+		if err == nil || len(currentBytes) != 0 {
 			//myLogger.Info("enter into reged person")
 
 			regData, err := NewJson(currentBytes)
@@ -97,6 +97,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			return nil, nil
 
 		}
+		err = nil
 		//myLogger.Info("enter into new person")
 		//Get current date and time
 		t := time.Now()
