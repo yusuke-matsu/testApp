@@ -84,12 +84,12 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		//err := json.Unmarshal(currentBytes, &record_issue)
 
 		if err == nil && currentBytes != nil {
-			//err = json.Unmarshal(currentBytes, &record_issue)
-			//bytes, err := json.Marshal(record_issue)
-			regData, err := NewJson(currentBytes)
+			err = json.Unmarshal(currentBytes, &record_issue)
+			bytes, err := json.Marshal(record_issue)
+			regData, err := NewJson(bytes)
 			currentAmount, err := regData.Get("amount").Float64()
-			newAmount := currentAmount + issue_amount
-			regData.Set("amount", newAmount)
+			currentAmount += issue_amount
+			regData.Set("amount", currentAmount)
 			t := time.Now()
 			timeString := ""
 			timeString = t.String()
