@@ -79,7 +79,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		//myLogger.Info("start get issue")
 		//currentBytes, err := t.getIssue(stub, key)
 		currentBytes, err := stub.GetState(key)
-		myLogger.Info("currentBytes" + currentBytes)
+		myLogger.Info(currentBytes)
 
 		//myLogger.Info(currentBytes)
 		//err := json.Unmarshal(currentBytes, &record_issue)
@@ -87,9 +87,9 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		if err == nil && currentBytes != nil {
 			err = json.Unmarshal(currentBytes, &record_issue)
 			bytes, err := json.Marshal(record_issue)
-			myLogger.Info("bytes" + bytes)
+			myLogger.Info(bytes)
 			regData, err := NewJson(bytes)
-			myLogger.Info("regData" + regData)
+			myLogger.Info(regData)
 			currentAmount, err := regData.Get("amount").Float64()
 			currentAmount += issue_amount
 			regData.Set("amount", currentAmount)
@@ -189,18 +189,18 @@ func (t *SimpleChaincode) getIssue(stub shim.ChaincodeStubInterface, personName 
 	key := "issue/" + personName
 	issueBytes, err := stub.GetState(key)
 	fmt.Println(issueBytes)
-	myLogger.Info("issueBytes" + issueBytes)
+	myLogger.Info(issueBytes)
 	if err != nil {
 		return nil, errors.New("#### failed to get state of" + key)
 	}
 	err = json.Unmarshal(issueBytes, &record_issue)
-	myLogger.Info("record_issue" + record_issue)
+	myLogger.Info(record_issue)
 	if err != nil {
 		return nil, errors.New("#### failed to unmarshall state")
 	}
 
 	bytes, err := json.Marshal(record_issue)
-	myLogger.Info("bytes" + bytes)
+	myLogger.Info(bytes)
 	if err != nil {
 		return nil, errors.New("####error creating data ####")
 	}
