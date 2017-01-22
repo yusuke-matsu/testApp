@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"reflect"
 	"strconv"
 	"time"
@@ -34,7 +35,7 @@ type IssueSet struct {
 	Issues []Issue `json:"issues"`
 }
 
-//var myLogger = logging.MustGetLogger("asset_mgm")
+var myLogger = shim.NewLogger("myChainCode")
 
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
@@ -78,7 +79,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		//myLogger.Info("start get issue")
 		//currentBytes, err := t.getIssue(stub, key)
 		currentBytes, err := stub.GetState(key)
-		fmt.Println(currentBytes)
+		myLogger.Info(currentBytes)
 		fmt.Println(err)
 		//myLogger.Info(currentBytes)
 		//err := json.Unmarshal(currentBytes, &record_issue)
@@ -355,6 +356,9 @@ func (j *Json) Float64() (float64, error) {
 */
 
 func main() {
+	myLogger.SetLevel(shim.LogInfo)
+	logLevel, _ := shim.LogLevel(os.Getenv("SHIM_LOGGING_LEVEL"))
+	shim.SetLoggingLevel(logLevel)
 	err := shim.Start(new(SimpleChaincode))
 	if err != nil {
 		fmt.Printf("Error starting Simple chaincode: %s", err)
