@@ -60,7 +60,6 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
 		var person_Name string
 		var issue_amount float64
-		var record_issue Issue
 
 		//need to check person has already been registered or not
 
