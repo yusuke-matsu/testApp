@@ -76,7 +76,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		}
 
 		//myLogger.Info("start get issue")
-		currentBytes, err := t.getIssue(stub, key)
+		//currentBytes, err := t.getIssue(stub, key)
+		currentBytes, err := stub.GetState(key)
 		fmt.Println(currentBytes)
 		fmt.Println(err)
 		//myLogger.Info(currentBytes)
