@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/op/go-logging"
 )
 
 // SimpleChaincode example simple Chaincode implementation
@@ -31,6 +32,8 @@ type Issue struct {
 type IssueSet struct {
 	Issues []Issue `json:"issues"`
 }
+
+var myLogger = logging.MustGetLogger("asset_mgm")
 
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
@@ -71,13 +74,15 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			return nil, errors.New("can't parse float")
 		}
 
-		currentBytes, err := t.getIssue(stub, person_Name)
+		myLogger.Info("start get issue")
+		currentBytes, err := t.getIssue(stub, key)
 		fmt.Println(currentBytes)
 		fmt.Println(err)
-
+		myLogger.Info(currentBytes)
 		//err := json.Unmarshal(currentBytes, &record_issue)
 
 		if err != nil || len(currentBytes) != 0 {
+			myLogger.Info("enter into reged person")
 
 			regData, err := NewJson(currentBytes)
 			currentAmount, err := regData.Get("amount").Float64()
@@ -92,7 +97,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			return nil, nil
 
 		}
-
+		myLogger.Info("enter into new person")
 		//Get current date and time
 		t := time.Now()
 
