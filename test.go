@@ -83,7 +83,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		//myLogger.Info(currentBytes)
 		//err := json.Unmarshal(currentBytes, &record_issue)
 
-		if err == nil || len(currentBytes) != 0 {
+		if err == nil && currentBytes != nil {
 			//myLogger.Info("enter into reged person")
 
 			regData, err := NewJson(currentBytes)
