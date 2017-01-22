@@ -78,11 +78,11 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		if err != nil || currentBytes != nil {
 			//aa, err := simplejson.NewJson(currentBytes)
 
-			regDate, err := NewJson(currentBytes)
-			currentAmount, err := regDate.Get("amount").Float64()
+			regData, err := NewJson(currentBytes)
+			currentAmount, err := regData.Get("amount").Float64()
 			newAmount := currentAmount + issue_amount
-			regDate.Set("amount", newAmount)
-			newBytes, err := json.Marshal(regDate)
+			regData.Set("amount", newAmount)
+			newBytes, err := json.Marshal(regData)
 			err = stub.PutState(key, newBytes)
 			if err != nil {
 				return nil, errors.New("#####  faild to update data #####")
@@ -215,30 +215,26 @@ func (t *SimpleChaincode) getAllIssue(stub shim.ChaincodeStubInterface) ([]byte,
 	return []byte(bytes), nil
 }
 
-/*func (t *SimpleChaincode) payCrypto(stub shim.ChaincodeStubInterface) ([]byte, error) {
+/*func (t *SimpleChaincode) payCrypto( payPerson string, getPerson strimg,payAmount float64) ([]byte, error) {
 
 	var err err
-	var payPerson string
-	var getPerson string
-	var payAmount float64
-
-	payPerson = args[0]
-	getPerson = arg[1]
-	payAmount, err = strconv.ParseFloat(args[2], 64)
-
-	if err != nil {
-		return nil, errors.new("cant parse float")
-	}
 
 	ts, err = stub.GetTxTimestamp()
-	stub.
+
 	if err != nil {
 		fmt.Printf("Error getting transaction timestamp: %s", err)
 	}
 
-	payPersonBytes, err := stub.GetState(payPerson)
-	fmt.Println(payPersonBytes)
+  err := paySubstruction(payPerson,payAmount)
 
+  if t.getIssue(getPerson) = nil, _ {
+	// add crypto to new person
+
+}else{
+  currentBytes, _ := t.getIssu(getPerson)
+  err  := payAdd(currentBytes,payAmount)
+
+}
 	if err != nil {
 		return nil, errors.New("#### failed to get state of" + payPerson)
 	}
@@ -297,6 +293,37 @@ func (j *Json) Float64() (float64, error) {
 	}
 	return 0, errors.New("invalid value type")
 }
+
+/*func paySubstruction(payPerson string, amount float64)(error) {
+
+	payPersonBytes, err := t.getIssue(payPerson)
+  fmt.Println(payPersonBytes)
+	payPersonRecords = NewJson(payPersonBytes)
+  payPersonAmout,err := payPersonRecords.Get("amount").Float64()
+  afterPayAmount := payPersonAmout - amount
+	payPersonRecords.Set("amount",afterPayAmount)
+  afterPayBytes, err = json.Marshal(payPersonRecords)
+  err = stub.PutState(payPerson,afterPayBytes)
+	if err != nil{
+    return errors.New("miss updat")
+}
+	return nil
+}
+
+ func payAdd(currentBytes []byte(), addAmount float64)(error){
+
+		getParsonJson, err := NewJson(currentBytes)
+		currentAmount, err := getParsonJson.Get("amount").Float64()
+		newAmount := currentAmount + addAmount
+		getParsonJson.Set("amount", newAmount)
+		newBytes, err := json.Marshal(getParsonJson)
+		err = stub.PutState(key, newBytes)
+		if err != nil {
+			return errors.New("#####  faild to update data #####")
+		}
+
+}
+*/
 
 func main() {
 	err := shim.Start(new(SimpleChaincode))
