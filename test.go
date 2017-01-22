@@ -64,7 +64,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
 		var person_Name string
 		var issue_amount float64
-
+		var record_issue Issue
 		//need to check person has already been registered or not
 
 		//get and set values
@@ -84,8 +84,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		//err := json.Unmarshal(currentBytes, &record_issue)
 
 		if err == nil && currentBytes != nil {
-			//myLogger.Info("enter into reged person")
-
+			//err = json.Unmarshal(currentBytes, &record_issue)
+			//bytes, err := json.Marshal(record_issue)
 			regData, err := NewJson(currentBytes)
 			currentAmount, err := regData.Get("amount").Float64()
 			newAmount := currentAmount + issue_amount
@@ -95,7 +95,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			timeString = t.String()
 			regData.Set("issueTime", timeString)
 			newBytes, err := json.Marshal(regData)
-			err = stub.PutState(key, newBytes)
+			err = stub.PutState(key, []byte(newBytes))
 			if err != nil {
 				return nil, errors.New("#####  faild to update data #####")
 			}
@@ -127,8 +127,6 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		}*/
 		timeString := ""
 		timeString = t.String()
-
-		var record_issue Issue
 
 		record_issue = Issue{
 			PersonName: person_Name,
@@ -242,7 +240,7 @@ func (t *SimpleChaincode) getAllIssue(stub shim.ChaincodeStubInterface) ([]byte,
 
 	var err err
 
-	ts, err = stub.GetTxTimestamp()
+
 
 	if err != nil {
 		fmt.Printf("Error getting transaction timestamp: %s", err)
