@@ -24,9 +24,10 @@ type Json struct {
 type Issue struct {
 	PersonName string  `json:"personName`
 	Amount     float64 `json:"amount"`
-	IssueYear  uint16  `json:"issue_year"`
-	IssueMonth uint8   `json:"issue_month"`
-	IssueDay   uint8   `json:"issue_day"`
+	IssueTime  string  `json:"issueTime"`
+	//	IssueYear  uint16  `json:"issue_year"`
+	//	IssueMonth uint8   `json:"issue_month"`
+	//	IssueDay   uint8   `json:"issue_day"`
 }
 
 type IssueSet struct {
@@ -88,6 +89,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			currentAmount, err := regData.Get("amount").Float64()
 			newAmount := currentAmount + issue_amount
 			regData.Set("amount", newAmount)
+			t := time.Now()
+			timeString := ""
+			timeString = t.String()
+			regData.Set("issueTime", timeString)
 			newBytes, err := json.Marshal(regData)
 			err = stub.PutState(key, newBytes)
 			if err != nil {
@@ -102,7 +107,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		//Get current date and time
 		t := time.Now()
 
-		//time record
+		/*time record
 		var year uint16
 		var month uint8
 		var day uint8
@@ -118,6 +123,16 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			IssueYear:  year,
 			IssueMonth: month,
 			IssueDay:   day,
+		}*/
+		timeString := ""
+		timeString = t.String()
+
+		var record_issue Issue
+
+		record_issue = Issue{
+			PersonName: person_Name,
+			Amount:     issue_amount,
+			IssueTime:  timeString,
 		}
 
 		bytes, err := json.Marshal(record_issue)
@@ -309,6 +324,10 @@ func (j *Json) Float64() (float64, error) {
   payPersonAmout,err := payPersonRecords.Get("amount").Float64()
   afterPayAmount := payPersonAmout - amount
 	payPersonRecords.Set("amount",afterPayAmount)
+	t := time.Now()
+	timeString := ""
+	timeString = t.String()
+	payPersonRecords.Set("issueTime",timeString)
   afterPayBytes, err = json.Marshal(payPersonRecords)
   err = stub.PutState(payPerson,afterPayBytes)
 	if err != nil{
@@ -323,6 +342,10 @@ func (j *Json) Float64() (float64, error) {
 		currentAmount, err := getParsonJson.Get("amount").Float64()
 		newAmount := currentAmount + addAmount
 		getParsonJson.Set("amount", newAmount)
+		t := time.Now()
+		timeString := ""
+		timeString = t.String()
+		payPersonRecords.Set("issueTime",timeString)
 		newBytes, err := json.Marshal(getParsonJson)
 		err = stub.PutState(key, newBytes)
 		if err != nil {
