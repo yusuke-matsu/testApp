@@ -91,13 +91,17 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			regData, err := NewJson(bytes)
 			myLogger.Info(regData)
 			currentAmount, err := regData.Get("amount").Float64()
+			myLogger.Info(currentAmount)
 			currentAmount += issue_amount
+			myLogger.Info(currentAmount)
 			regData.Set("amount", currentAmount)
+			myLogger.Info(regData)
 			t := time.Now()
 			timeString := ""
 			timeString = t.String()
 			regData.Set("issueTime", timeString)
 			newBytes, err := json.Marshal(regData)
+			myLogger.Info(newBytes)
 			err = stub.PutState(key, []byte(newBytes))
 			if err != nil {
 				return nil, errors.New("#####  faild to update data #####")
