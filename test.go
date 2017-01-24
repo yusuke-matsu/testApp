@@ -166,10 +166,10 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 
 	if function == "getIssue" {
 
-		if len(args) != 1 {
+		/*if len(args) != 1 {
 			fmt.Println("####Incorrect args number####")
 			return nil, errors.New("#### Incorrect number of args###")
-		}
+		}*/
 
 		person_name := args[0]
 		return t.getIssue(stub, person_name)
