@@ -76,23 +76,28 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			return nil, errors.New("can't parse float")
 		}
 
-		//myLogger.Info("start get issue")
-		//currentBytes, err := t.getIssue(stub, key)
-		//currentBytes, err := stub.GetState(key)
 		queryMethod := "getIssue"
 		currentBytes, err := t.Query(stub, queryMethod, args)
 		myLogger.Info(currentBytes)
 
-		//myLogger.Info(currentBytes)
-		//err := json.Unmarshal(currentBytes, &record_issue)
-
 		if err == nil && currentBytes != nil {
 			err = json.Unmarshal(currentBytes, &record_issue)
-			bytes, err := json.Marshal(record_issue)
+			myLogger.Info(record_issue)
+			newAmount := issue_amount + record_issue.Amount
+			t := time.Now()
+			timeString := ""
+			timeString = t.String()
+			newRecordIssue := Issue{
+				PersonName: record_issue.PersonName,
+				Amount:     newAmount,
+				IssueTime:  timeString,
+			}
+			myLogger.Info(newRecordIssue)
+			/*bytes, err := json.Marshal(record_issue)
 			myLogger.Info(bytes)
 			regData, err := NewJson(bytes)
 			myLogger.Info(regData)
-			currentAmount, err := regData.Get("amount").Float64()
+			currentAmount, err := record_issue.Get("amount").Float64()
 			myLogger.Info(currentAmount)
 			currentAmount += issue_amount
 			myLogger.Info(currentAmount)
@@ -101,8 +106,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 			t := time.Now()
 			timeString := ""
 			timeString = t.String()
-			regData.Set("issueTime", timeString)
-			newBytes, err := json.Marshal(regData)
+			regData.Set("issueTime", timeString)*/
+			newBytes, err := json.Marshal(newRecordIssue)
 			myLogger.Info(newBytes)
 			err = stub.PutState(key, []byte(newBytes))
 			if err != nil {
