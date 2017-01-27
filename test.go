@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	//"github.com/op/go-logging"
 )
 
 // SimpleChaincode example simple Chaincode implementation
@@ -26,9 +25,6 @@ type Issue struct {
 	PersonName string  `json:"personName`
 	Amount     float64 `json:"amount"`
 	IssueTime  string  `json:"issueTime"`
-	//	IssueYear  uint16  `json:"issue_year"`
-	//	IssueMonth uint8   `json:"issue_month"`
-	//	IssueDay   uint8   `json:"issue_day"`
 }
 
 type IssueSet struct {
@@ -48,118 +44,22 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
-	var err error
 	fmt.Println("Entering into Invoke : " + function)
-	//user, err := t.get_username(stub)
-	//if err != nil{
-	//	return nil, errors.New("#####  Failed to get username for function: " + function + " #####")
-	//}
-	//fmt.Println(" function called by: "+ user)
-
 	//called by issue func
+
 	if function == "issue" {
 		//to get (neme amount)
-		if len(args) != 2 {
-			return nil, errors.New("##### Incorect number of arg#####")
-		}
-
-		var person_Name string
-		var issue_amount float64
-		var record_issue Issue
-		//need to check person has already been registered or not
-
-		//get and set values
-		person_Name = args[0]
-		key := "issue/" + person_Name
-		issue_amount, err = strconv.ParseFloat(args[1], 64)
-		if err != nil {
-			return nil, errors.New("can't parse float")
-		}
-
-		queryMethod := "getIssue"
-		currentBytes, err := t.Query(stub, queryMethod, args)
-		myLogger.Info(currentBytes)
-
-		if err == nil && currentBytes != nil {
-			err = json.Unmarshal(currentBytes, &record_issue)
-			myLogger.Info(record_issue)
-			newAmount := issue_amount + record_issue.Amount
-			t := time.Now()
-			timeString := ""
-			timeString = t.String()
-			newRecordIssue := Issue{
-				PersonName: record_issue.PersonName,
-				Amount:     newAmount,
-				IssueTime:  timeString,
-			}
-			myLogger.Info(newRecordIssue)
-			/*bytes, err := json.Marshal(record_issue)
-			myLogger.Info(bytes)
-			regData, err := NewJson(bytes)
-			myLogger.Info(regData)
-			currentAmount, err := record_issue.Get("amount").Float64()
-			myLogger.Info(currentAmount)
-			currentAmount += issue_amount
-			myLogger.Info(currentAmount)
-			regData.Set("amount", currentAmount)
-			myLogger.Info(regData)
-			t := time.Now()
-			timeString := ""
-			timeString = t.String()
-			regData.Set("issueTime", timeString)*/
-			newBytes, err := json.Marshal(newRecordIssue)
-			myLogger.Info(newBytes)
-			err = stub.PutState(key, []byte(newBytes))
-			if err != nil {
-				return nil, errors.New("#####  faild to update data #####")
-			}
-
-			return nil, nil
-
-		}
-		err = nil
-		//myLogger.Info("enter into new person")
-		//Get current date and time
-		t := time.Now()
-
-		/*time record
-		var year uint16
-		var month uint8
-		var day uint8
-
-		year = uint16(t.Year())
-		month = uint8(t.Month())
-		day = uint8(t.Day())
-
-		var record_issue Issue
-		record_issue = Issue{
-			PersonName: person_Name,
-			Amount:     issue_amount,
-			IssueYear:  year,
-			IssueMonth: month,
-			IssueDay:   day,
-		}*/
-		timeString := ""
-		timeString = t.String()
-
-		record_issue = Issue{
-			PersonName: person_Name,
-			Amount:     issue_amount,
-			IssueTime:  timeString,
-		}
-
-		bytes, err := json.Marshal(record_issue)
+		err := t.addIssue(stub, args)
 
 		if err != nil {
-			return nil, errors.New("#####  Failed to convert json #####")
+			return nil, err
 		}
-		err = stub.PutState(key, []byte(bytes))
-
+		return nil, nil
+	} else if function == "payCrypto" {
+		err := t.payCrypto(stub, args)
 		if err != nil {
-			return nil, errors.New("unable to put the state")
+			return nil, err
 		}
-
-		fmt.Println("complete register name and amount")
 		return nil, nil
 	} else {
 		return nil, errors.New("undifine such func")
@@ -251,30 +151,89 @@ func (t *SimpleChaincode) getAllIssue(stub shim.ChaincodeStubInterface) ([]byte,
 	return []byte(bytes), nil
 }
 
-/*func (t *SimpleChaincode) payCrypto( payPerson string, getPerson strimg,payAmount float64) ([]byte, error) {
+func (t *SimpleChaincode) addIssue(stub shim.ChaincodeStubInterface, args []string) error {
 
-	var err err
+	var err error
+	var person_Name string
+	var issue_amount float64
+	var record_issue Issue
 
-
-
+	person_Name = args[0]
+	key := "issue/" + person_Name
+	issue_amount, err = strconv.ParseFloat(args[1], 64)
 	if err != nil {
-		fmt.Printf("Error getting transaction timestamp: %s", err)
+		return errors.New("can't parse float")
 	}
 
-  err := paySubstruction(payPerson,payAmount)
+	queryMethod := "getIssue"
+	currentBytes, err := t.Query(stub, queryMethod, args)
+	myLogger.Info(currentBytes)
 
-  if t.getIssue(getPerson) = nil, _ {
-	// add crypto to new person
+	if err == nil && currentBytes != nil {
+		err = json.Unmarshal(currentBytes, &record_issue)
+		myLogger.Info(record_issue)
+		newAmount := issue_amount + record_issue.Amount
+		newTime := time.Now()
+		timeString := ""
+		timeString = newTime.String()
 
-}else{
-  currentBytes, _ := t.getIssu(getPerson)
-  err  := payAdd(currentBytes,payAmount)
+		newRecordIssue := Issue{
+			PersonName: record_issue.PersonName,
+			Amount:     newAmount,
+			IssueTime:  timeString,
+		}
+		myLogger.Info(newRecordIssue)
 
+		newBytes, err := json.Marshal(newRecordIssue)
+		myLogger.Info(newBytes)
+		err = stub.PutState(key, []byte(newBytes))
+		if err != nil {
+			return errors.New("#####  faild to update data #####")
+		}
+
+	} else {
+
+		err = nil
+		//Get current date and time
+		newTime := time.Now()
+		timeString := ""
+		timeString = newTime.String()
+		record_issue = Issue{
+			PersonName: person_Name,
+			Amount:     issue_amount,
+			IssueTime:  timeString,
+		}
+		bytes, err := json.Marshal(record_issue)
+		if err != nil {
+			return errors.New("#####  Failed to convert json #####")
+		}
+		err = stub.PutState(key, []byte(bytes))
+		if err != nil {
+			return errors.New("unable to put the state")
+		}
+
+	}
+	return nil
 }
+
+func (t *SimpleChaincode) payCrypto(stub shim.ChaincodeStubInterface, args []string) error {
+
+	var err error
+
+	/*if err != nil {
+		fmt.Printf("Error getting transaction timestamp: %s", err)
+	}*/
+
+	err = t.paySubstruction(stub, args)
 	if err != nil {
-		return nil, errors.New("#### failed to get state of" + payPerson)
+		return errors.New("error to substruct")
 	}
-}*/
+	err = t.addIssue(stub, args)
+	if err != nil {
+		return errors.New("error to add")
+	}
+	return nil
+}
 
 func NewJson(body []byte) (*Json, error) {
 	j := new(Json)
@@ -328,46 +287,82 @@ func (j *Json) Float64() (float64, error) {
 		return float64(reflect.ValueOf(j.data).Uint()), nil
 	}
 	return 0, errors.New("invalid value type")
+
 }
 
-/*func paySubstruction(payPerson string, amount float64)(error) {
+func (t *SimpleChaincode) paySubstruction(stub shim.ChaincodeStubInterface, args []string) error {
 
-	payPersonBytes, err := t.getIssue(payPerson)
-  fmt.Println(payPersonBytes)
-	payPersonRecords = NewJson(payPersonBytes)
-  payPersonAmout,err := payPersonRecords.Get("amount").Float64()
-  afterPayAmount := payPersonAmout - amount
-	payPersonRecords.Set("amount",afterPayAmount)
-	t := time.Now()
+	var record_issue Issue
+	person_Name := args[0]
+	key := "issue/" + person_Name
+	queryMethod := "getIssue"
+	currentBytes, err := t.Query(stub, queryMethod, args)
+	myLogger.Info(currentBytes)
+	err = json.Unmarshal(currentBytes, &record_issue)
+	subAmount, err := strconv.ParseFloat(args[1], 64)
+	newAmount := record_issue.Amount - subAmount
+	newTime := time.Now()
 	timeString := ""
-	timeString = t.String()
-	payPersonRecords.Set("issueTime",timeString)
-  afterPayBytes, err = json.Marshal(payPersonRecords)
-  err = stub.PutState(payPerson,afterPayBytes)
-	if err != nil{
-    return errors.New("miss updat")
-}
+	timeString = newTime.String()
+	newRecordIssue := Issue{
+		PersonName: record_issue.PersonName,
+		Amount:     newAmount,
+		IssueTime:  timeString,
+	}
+	myLogger.Info(newRecordIssue)
+	newBytes, err := json.Marshal(newRecordIssue)
+	myLogger.Info(newBytes)
+	err = stub.PutState(key, []byte(newBytes))
+	if err != nil {
+		return errors.New("#####  faild to update data #####")
+	}
+
 	return nil
 }
 
- func payAdd(currentBytes []byte(), addAmount float64)(error){
+/*func (t *SimpleChaincode) payAdd(stub shim.ChaincodeStubInterface, args []string) error {
+	var err error
+	var person_Name string
+	var issue_amount float64
+	var record_issue Issue
 
-		getParsonJson, err := NewJson(currentBytes)
-		currentAmount, err := getParsonJson.Get("amount").Float64()
-		newAmount := currentAmount + addAmount
-		getParsonJson.Set("amount", newAmount)
-		t := time.Now()
+	person_Name = args[0]
+	key := "issue/" + person_Name
+	issue_amount, err = strconv.ParseFloat(args[1], 64)
+	if err != nil {
+		return errors.New("can't parse float")
+	}
+	queryMethod := "getIssue"
+	currentBytes, err := t.Query(stub, queryMethod, args)
+	myLogger.Info(currentBytes)
+
+	if err == nil && currentBytes != nil {
+		err = json.Unmarshal(currentBytes, &record_issue)
+		myLogger.Info(record_issue)
+		newAmount := issue_amount + record_issue.Amount
+		newTime := time.Now()
 		timeString := ""
-		timeString = t.String()
-		payPersonRecords.Set("issueTime",timeString)
-		newBytes, err := json.Marshal(getParsonJson)
-		err = stub.PutState(key, newBytes)
+		timeString = newTime.String()
+		newRecordIssue := Issue{
+			PersonName: record_issue.PersonName,
+			Amount:     newAmount,
+			IssueTime:  timeString,
+		}
+		myLogger.Info(newRecordIssue)
+		newBytes, err := json.Marshal(newRecordIssue)
+		myLogger.Info(newBytes)
+		err = stub.PutState(key, []byte(newBytes))
 		if err != nil {
 			return errors.New("#####  faild to update data #####")
 		}
+		return nil
+	}
 
-}
-*/
+	if err != nil {
+		return errors.New("#####  faild to update data #####")
+	}
+	return nil
+}*/
 
 func main() {
 	myLogger.SetLevel(shim.LogInfo)
