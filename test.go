@@ -158,7 +158,8 @@ func (t *SimpleChaincode) addIssue(stub shim.ChaincodeStubInterface, args []stri
 	var issue_amount float64
 	var record_issue Issue
 
-	if len(args) == 3 {
+	slliceLength := len(args)
+	if slliceLength == 3 {
 		person_Name = args[2]
 	} else {
 		person_Name = args[0]
