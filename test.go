@@ -164,9 +164,12 @@ func (t *SimpleChaincode) addIssue(stub shim.ChaincodeStubInterface, args []stri
 
 	if slliceLength == 3 {
 		person_Name = args[2]
+		args[0] = person_Name
+
 	} else {
 		person_Name = args[0]
 	}
+	myLogger.Info(person_Name)
 
 	key := "issue/" + person_Name
 	issue_amount, err = strconv.ParseFloat(args[1], 64)
