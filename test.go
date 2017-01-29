@@ -75,8 +75,14 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 			fmt.Println("####Incorrect args number####")
 			return nil, errors.New("#### Incorrect number of args###")
 		}*/
+		sliceLength := len(args)
 
-		person_name := args[0]
+		if sliceLength == 3 {
+			person_name := args[2]
+		} else {
+			person_name := args[0]
+		}
+
 		return t.getIssue(stub, person_name)
 
 	} else if function == "getAllIssues" {
@@ -159,13 +165,12 @@ func (t *SimpleChaincode) addIssue(stub shim.ChaincodeStubInterface, args []stri
 	var record_issue Issue
 
 	myLogger.Info(args)
-	slliceLength := len(args)
-	myLogger.Info(slliceLength)
+	sliceLength := len(args)
+	myLogger.Info(sliceLength)
 
-	if slliceLength == 3 {
+	if sliceLength == 3 {
 		person_Name = args[2]
-		args[0] = person_Name
-
+		//args[0] = person_Name
 	} else {
 		person_Name = args[0]
 	}
@@ -179,6 +184,7 @@ func (t *SimpleChaincode) addIssue(stub shim.ChaincodeStubInterface, args []stri
 
 	queryMethod := "getIssue"
 	currentBytes, err := t.Query(stub, queryMethod, args)
+	myLogger.Info(err)
 	myLogger.Info(currentBytes)
 
 	if err == nil && currentBytes != nil {
