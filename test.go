@@ -75,15 +75,17 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 			fmt.Println("####Incorrect args number####")
 			return nil, errors.New("#### Incorrect number of args###")
 		}*/
-		var person_name string
+
 		sliceLength := len(args)
 		if sliceLength == 3 {
-			person_name = args[2]
+			person_name := args[2]
+			myLogger.Info(person_name)
+			return t.getIssue(stub, person_name)
 		} else {
-			person_name = args[0]
+			person_name := args[0]
+			myLogger.Info(person_name)
+			return t.getIssue(stub, person_name)
 		}
-
-		return t.getIssue(stub, person_name)
 
 	} else if function == "getAllIssues" {
 		if len(args) != 0 {
@@ -343,7 +345,6 @@ func (t *SimpleChaincode) paySubstruction(stub shim.ChaincodeStubInterface, args
 	var person_Name string
 	var issue_amount float64
 	var record_issue Issue
-
 	person_Name = args[0]
 	key := "issue/" + person_Name
 	issue_amount, err = strconv.ParseFloat(args[1], 64)
@@ -353,7 +354,6 @@ func (t *SimpleChaincode) paySubstruction(stub shim.ChaincodeStubInterface, args
 	queryMethod := "getIssue"
 	currentBytes, err := t.Query(stub, queryMethod, args)
 	myLogger.Info(currentBytes)
-
 	if err == nil && currentBytes != nil {
 		err = json.Unmarshal(currentBytes, &record_issue)
 		myLogger.Info(record_issue)
@@ -375,7 +375,6 @@ func (t *SimpleChaincode) paySubstruction(stub shim.ChaincodeStubInterface, args
 		}
 		return nil
 	}
-
 	if err != nil {
 		return errors.New("#####  faild to update data #####")
 	}
