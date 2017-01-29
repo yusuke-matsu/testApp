@@ -75,8 +75,8 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 			fmt.Println("####Incorrect args number####")
 			return nil, errors.New("#### Incorrect number of args###")
 		}*/
+		var person_name string
 		sliceLength := len(args)
-
 		if sliceLength == 3 {
 			person_name := args[2]
 		} else {
