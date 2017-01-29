@@ -78,9 +78,9 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		var person_name string
 		sliceLength := len(args)
 		if sliceLength == 3 {
-			person_name := args[2]
+			person_name = args[2]
 		} else {
-			person_name := args[0]
+			person_name = args[0]
 		}
 
 		return t.getIssue(stub, person_name)
