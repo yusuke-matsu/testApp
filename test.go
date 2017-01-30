@@ -190,7 +190,10 @@ func (t *SimpleChaincode) addIssue(stub shim.ChaincodeStubInterface, args []stri
 	myLogger.Info(err)
 	myLogger.Info(currentBytes)
 
+	myLogger.Info("before enter condition")
+
 	if err == nil && currentBytes != nil {
+		myLogger.Info("enter already reg person")
 		err = json.Unmarshal(currentBytes, &record_issue)
 		myLogger.Info(record_issue)
 		newAmount := issue_amount + record_issue.Amount
@@ -213,6 +216,7 @@ func (t *SimpleChaincode) addIssue(stub shim.ChaincodeStubInterface, args []stri
 		}
 
 	} else {
+		myLogger.Info("enter into new person")
 
 		err = nil
 		//Get current date and time
